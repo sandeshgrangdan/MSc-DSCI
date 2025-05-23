@@ -573,9 +573,8 @@ ci_lower <- y_pred - z_95 * se_pred
 ci_upper <- y_pred + z_95 * se_pred
 
 # 10. Plot actual vs predicted with error bars
-
 plot(y_pred, y,
-     col = "pink", pch = 19,
+     col = rgb(1, 0, 1, 0.6), pch = 19,
      xlim = range(c(ci_lower, ci_upper, Y_testing_data)),
      ylab = "Test Sample Index", xlab = "Y_testing_hat(Prediction)",
      main = "Predictions with 95% Confidence Intervals")
@@ -584,11 +583,12 @@ plot(y_pred, y,
 segments(y0 = y_hat_len, x0 = ci_lower, y1 = y_hat_len, x1 = ci_upper, col = rgb(1, 0, 0, 0.01), lwd = 2, pch = 2)
 
 # Add actual test data points
-points(Y_testing_data, y, col = "black", pch = 4)
+points(Y_testing_data, y, col = rgb(1, 0, 0, 0.6), pch = 4)
 
 # Add legend
 legend("topright", legend = c("Y_testing_hat(Prediction)", "95% CI", "Y_testing_data(Actual)"),
-       col = c("pink", rgb(1, 0, 0, 0.01), "black"), pch = c(19, NA, 4), lty = c(1, NA, NA))
+       col = c(rgb(1, 0, 1, 0.6), rgb(1, 0, 0, 1), rgb(0, 0, 0, 0.6)),
+       pch = c(19, NA, 4), lty = c(1, NA, NA))
 
 #plot_df <- data.frame(
 #  index = seq_along(y_pred),
