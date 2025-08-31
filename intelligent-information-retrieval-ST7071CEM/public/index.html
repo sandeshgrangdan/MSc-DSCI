@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Research Papers Database</title>
+    <link rel="stylesheet" href="/public/style.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+      .progress-container {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        top: 4px;
+      }
+
+      .progress-container svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+      }
+      .progress-ring__background {
+        stroke: #eee;
+      }
+      .progress-ring__circle {
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        stroke: blue;
+      }
+      .progress-text {
+        position: absolute;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
+        <!-- Search Section -->
+        <div class="search-section">
+          <h1>Research Papers Database</h1>
+          <input
+            type="text"
+            class="search-input"
+            v-model="searchQuery"
+            placeholder="Search papers by title, author, or keywords..."
+            @input="handleSearch"
+          />
+        </div>
+
+        <!-- Papers List -->
+        <div class="papers-list">
+          <!-- Loading State -->
+          <div v-if="loading" class="loading">Searching papers</div>
+
+          <!-- Error State -->
+          <div v-if="error" class="error">{{ error }}</div>
+
+          <!-- Search Info -->
+          <div v-if="hasSearched && !loading && !error" class="search-info">
+            Found {{ papers.length }} paper{{ papers.length !== 1 ? 's' : '' }}
+            <span v-if="searchQuery.trim()">for "{{ searchQuery }}"</span>
+          </div>
+
+          <!-- No Results -->
+          <div
+            v-if="!loading && !error && papers.length === 0 && hasSearched"
+            class="no-results"
+          >
+            No papers found matching your search criteria.
+          </div>
+
+          <!-- Results -->
+          <div
+            v-for="paper in papers"
+            :key="paper.id"
+            class="paper-card"
+            v-show="!loading"
+          >
+            <a :href="paper.link" target="_blank" class="paper-title" v-html="paper.title"> </a>
+
+            <div class="paper-meta">
+              <strong v-html="paper.authors"></strong>, {{ paper.date }} , {{
+              paper.journal }}
+            </div>
+
+            <div class="paper-type">{{ paper.type }}</div>
+
+            <div class="access-badges" v-if="paper.access.length > 0">
+              <span
+                v-for="badge in paper.access"
+                :key="badge"
+                :class="['access-badge', badge.toLowerCase().replace(' ', '-')]"
+              >
+                {{ badge }}
+              </span>
+            </div>
+
+            <div class="tags">
+              <span
+                v-for="tag in paper.tags"
+                :key="tag.name"
+                :class="['tag', { 'partial': tag.partial }]"
+              >
+                {{ tag.name }}
+                <round-progress :value="tag.value"></round-progress>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { createApp, ref, computed, watch, onMounted } = Vue;
+
+      const capitalizeFirst = (str) =>
+        str?.charAt(0).toUpperCase() + str?.slice(1) || "";
+
+      const cleanLatexTitle = (title) => {
+        if (!title) return title;
+
+        return title
+          .replace(/\{\s*\\textquoteright\s*\}/g, "'")
+          .replace(/\{\s*\\textquoteleft\s*\}/g, "'")
+          .replace(/\{\s*\\textquotedblright\s*\}/g, '"')
+          .replace(/\{\s*\\&\s*\}/g, "&")
+          .replace(/\\\$/g, "$")
+          .replace(/\\%/g, "%")
+          .replace(/\{|\}/g, "") // Remove remaining braces
+          .replace(/\s+/g, " ")
+          .trim();
+      };
+
+      const app = createApp({
+        setup() {
+          const searchQuery = ref("");
+          const papers = ref([]);
+          const loading = ref(false);
+          const error = ref("");
+          const hasSearched = ref(false);
+
+          // Initial sample data (will be replaced by API data)
+          const initialPapers = [];
+
+          // Initialize with sample data
+          papers.value = initialPapers;
+
+          // API Configuration
+
+          // Debounce function to avoid too many API calls
+          let searchTimeout = null;
+          let controller = null;
+
+          // API call function
+          const searchPapers = async (query) => {
+            // if (!query.trim()) {
+            //   papers.value = initialPapers;
+            //   hasSearched.value = false;
+            //   return;
+            // }
+
+            if (controller) {
+              controller.abort();
+            }
+            controller = new AbortController();
+
+            loading.value = true;
+            error.value = "";
+            hasSearched.value = true;
+
+            try {
+              // Replace this with your actual API endpoint
+              const response = await fetch(`/search?query=${query}`, {
+                method: "GET",
+                signal: controller.signal,
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const data = await response.json();
+
+              // Transform API response to match our data structure
+              const transformedPapers =
+                data.results?.map((paper) => {
+                  const date = `${paper.day || ""} ${capitalizeFirst(
+                    paper.month || ""
+                  )} ${paper.year || ""}`;
+
+                  let pType = paper.detail || "";
+
+                  if (pType) {
+                    sType = pType.split(`${date},`);
+                    if (sType.length == 2) {
+                      pType = sType[1];
+                    }
+                  }
+
+                  return {
+                    id: paper.id,
+                    title: cleanLatexTitle(paper.title),
+                    authors: paper.authors
+                      .map((d) =>
+                        d.link ? `<a target="_blank" href="${d.link}">${d.name}</a>` : d.name
+                      )
+                      .join(", "),
+                    detail: paper.detail,
+                    date,
+                    journal: pType || "Unknown Journal",
+                    type: paper.output,
+                    link: paper.link || "#",
+                    access: paper.access_types || [],
+                    tags:
+                      paper.concepts.map((keyword) => {
+                        d = keyword.split("\n");
+                        return {
+                          name: d[0],
+                          value: d[1].replace("%", ""),
+                        };
+                      }) || [],
+                  };
+                }) || [];
+
+              papers.value = transformedPapers;
+            } catch (err) {
+              if (err.name === "AbortError") {
+                // Ignore aborted requests
+                console.log("Request aborted:", query);
+                return;
+              }
+              console.error("Search API Error:", err);
+              error.value = "Failed to search papers. Please try again later.";
+
+              // Fallback to local filtering if API fails
+              const query = searchQuery.value.toLowerCase();
+              papers.value = initialPapers.filter((paper) => {
+                return (
+                  paper.title.toLowerCase().includes(query) ||
+                  paper.authors.toLowerCase().includes(query) ||
+                  paper.journal.toLowerCase().includes(query) ||
+                  paper.tags.some((tag) =>
+                    tag.name.toLowerCase().includes(query)
+                  )
+                );
+              });
+            } finally {
+              loading.value = false;
+            }
+          };
+
+          // Watch for search query changes and debounce API calls
+          watch(searchQuery, (newQuery) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+              searchPapers(newQuery);
+            }, 500); // 500ms delay to debounce API calls
+          });
+
+          const handleSearch = () => {
+            // Force immediate search (can be called on form submit)
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+              searchPapers(searchQuery.value);
+            }, 500); // 500ms delay to debounce API calls
+          };
+
+          // Computed property for displaying papers (no longer needed for filtering since API handles it)
+          const displayPapers = computed(() => {
+            return papers.value;
+          });
+
+          onMounted(() => {
+            searchPapers(searchQuery.value || ""); // pass empty string or default query
+          });
+
+          return {
+            searchQuery,
+            papers: displayPapers,
+            loading,
+            error,
+            hasSearched,
+            handleSearch,
+          };
+        },
+      });
+
+      // round progress component
+      app.component("round-progress", {
+        props: {
+          value: { type: Number, default: 50 },
+          size: { type: Number, default: 16 },
+          stroke: { type: Number, default: 2 },
+        },
+        computed: {
+          radius() {
+            return 6;
+          },
+          circumference() {
+            return 2 * Math.PI * this.radius;
+          },
+          dashOffset() {
+            return this.circumference - (this.value / 100) * this.circumference;
+          },
+        },
+        template: `
+        <div class="progress-container">
+          <svg>
+            <circle
+              class="progress-ring__background"
+              :stroke-width="stroke"
+              fill="transparent"
+              :r="radius"
+              :cx="size / 2"
+              :cy="size / 2"
+            />
+            <circle
+              class="progress-ring__circle"
+              :stroke-width="stroke"
+              fill="transparent"
+              :r="radius"
+              :cx="size / 2"
+              :cy="size / 2"
+              :stroke-dasharray="circumference"
+              :stroke-dashoffset="dashOffset"
+            />
+          </svg>
+        </div>
+      `,
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>

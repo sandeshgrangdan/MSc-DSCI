@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tag Progress Example</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    background: #2c2c2c;
+    color: #fff;
+    padding: 4px 8px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  .tag svg {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+  }
+  .progress-bg {
+    stroke: #555;
+  }
+  .progress-fg {
+    stroke: #3b82f6; /* blue */
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div>
+    <progress-tag v-for="tag in tags" :key="tag.name" :name="tag.name" :value="tag.value"></progress-tag>
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      tags: [
+        { name: 'Operating System', value: 100 },
+        { name: 'Complete', value: 100 },
+        { name: 'Finite Game', value: 50 },
+        { name: 'Complete Separation', value: 70 },
+        { name: 'Passage Of Time', value: 20 },
+      ]
+    };
+  },
+  components: {
+    'progress-tag': {
+      props: ['name', 'value'],
+      computed: {
+        radius() { return 6; },
+        circumference() { return 2 * Math.PI * this.radius; },
+        dashOffset() {
+          return this.circumference - (this.value / 100) * this.circumference;
+        }
+      },
+      template: `
+        <div class="tag">
+          <svg>
+            <circle class="progress-bg" :r="radius" cx="8" cy="8" stroke-width="2" fill="transparent"/>
+            <circle class="progress-fg" :r="radius" cx="8" cy="8" stroke-width="2" fill="transparent"
+              :stroke-dasharray="circumference" :stroke-dashoffset="dashOffset"/>
+          </svg>
+          {{ name }}
+        </div>
+      `
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
+
