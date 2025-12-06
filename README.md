@@ -1,16 +1,53 @@
-# Module 1: Introduction to Statistical Methods for Data Science
+# 📚 Data Science and Computational Intelligence – Assignment Modules
 
-## 📘 Module Overview
+This repository contains assignment tasks for multiple modules taken as part of the **MSc in Data Science and Computational Intelligence** at **Coventry University**.
 
-This repository contains Task Requirement document, R code, knitted html document, dataset for the task/assignment of the module **Introduction to Statistical Methods for Data Science**.
+Each folder represents one module, and **each module folder includes its own README** describing tasks, code, datasets, and outputs.
+
+---
+
+## 👨‍🎓 Student Information
+
+* **Student Name**: Sandesh Tamang
+* **Course**: MSc Data Science and Computational Intelligence
+* **University**: Coventry University
 
 
-- **Student Name**: Sandesh Tamang  
-- **Module**: Introduction to Statistical Methods for Data Science  
-- **University**: Coventry University  
+---
 
-## 📁 Contents
+## 📂 Modules Overview (Click to Open)
 
-- `introduction-to-statistical-methods-for-data-science-STW7089CEM/STW 7089CEM Introduction To Statistical Methods For Data Science.docx` – Task Requirement
-- `introduction-to-statistical-methods-for-data-science-STW7089CEM/.Dataset_store` – Dataset with input and output data
-- `introduction-to-statistical-methods-for-data-science-STW7089CEM/stat.Rmd` – Solved Task code written in R
+### 1. **[Intelligent Information Retrieval – ST7071CEM](./intelligent-information-retrieval-ST7071CEM/README.md)**
+
+This module folder contains:
+
+* Task/assignment documents
+* Implementations and code
+* Supporting datasets and outputs
+
+---
+
+### 2. **[Introduction to Statistical Methods for Data Science – STW7089CEM](./introduction-to-statistical-methods-for-data-science-STW7089CEM/README.md)**
+
+This module folder contains:
+
+* Task requirement document
+* R code (`.Rmd`)
+* Knitted HTML output
+* Dataset directory
+
+---
+
+### 3. **[Machine Learning – STW7072CEM](./machine-learning-STW7072CEM/README.md)**
+
+This module folder contains:
+
+* Assignment tasks
+* Python scripts
+* UV environment setup instructions
+* Datasets and generated results
+
+
+---
+
+If you want, I can also generate **READMEs for each module folder**, add badges, tables, or automate the module list.
