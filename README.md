@@ -50,4 +50,15 @@ This module folder contains:
 
 ---
 
+### 4. **[Artificial Neural Networks – STW7088CEM](./artificial-neural-networks-STW7088CEM/README.md)**
+
+This module folder contains:
+
+* Assignment tasks
+* Python scripts
+* UV environment setup instructions
+* Datasets and generated results
+
+---
+
 If you want, I can also generate **READMEs for each module folder**, add badges, tables, or automate the module list.
