@@ -59,6 +59,4 @@ This module folder contains:
 * UV environment setup instructions
 * Datasets and generated results
 
----
 
-If you want, I can also generate **READMEs for each module folder**, add badges, tables, or automate the module list.
