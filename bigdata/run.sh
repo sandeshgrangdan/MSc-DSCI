@@ -1,0 +1,1 @@
+python main.py --input dataset/politifact_fake.csv --output test.csv --label fake --limit 2
