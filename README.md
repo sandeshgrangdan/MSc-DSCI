@@ -59,4 +59,13 @@ This module folder contains:
 * UV environment setup instructions
 * Datasets and generated results
 
+### 5. **[Big Data Management and Data Visualisation – STW7082CEM](./biig-data-management-and-data-visualisation-STW7082CEM/README.md)**
+
+This module folder contains:
+
+* Assignment tasks
+* Python scripts
+* UV environment setup instructions
+* Datasets and generated results
+
 

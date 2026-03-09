@@ -1,0 +1,39 @@
+# Big Data Management and Data Visualisation – STW7082CEM
+
+This project uses **UV** as the package and virtual-environment manager.
+Follow the steps below to set up and run the module.
+
+## 📦 Prerequisites
+
+Make sure you have:
+
+* **Python 3.12** installed
+* **UV** installed (instructions: [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/))
+
+---
+
+## 🚀 Setup Instructions
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/sandeshgrangdan/MSc-DSCI.git
+
+# 2. Enter the project directory
+cd biig-data-management-and-data-visualisation-STW7082CEM
+
+# 3. Create a virtual environment using UV
+uv venv
+
+# 4. Activate the virtual environment
+source .venv/bin/activate
+
+# 5. Install all project dependencies
+uv sync
+
+# 6. Copy dataset to hdfs
+hdfs dfs -mkdir -p /dataset
+hdfs dfs -put dataset/politifact_fake.csv /dataset
+
+# 7. Run the main script ipynb
+run main.ipynb
+```
